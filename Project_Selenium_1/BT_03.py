@@ -6,7 +6,7 @@ import time
 driver = webdriver.Chrome()
 
 # Mở trang
-url = "https://en.wikipedia.org/wiki/List_of_painters_by_name"
+url = "https://en.wikipedia.org/wiki/List_of_painters_by_name_beginning_with_%22P%22"
 driver.get(url)
 
 # Đợi 2 giây để trang tải

@@ -13,10 +13,10 @@ driver.get(url)
 time.sleep(2)
 
 # Lấy tất cả các thẻ <a> trong phần nội dung chính
-tags = driver.find_elements(By.XPATH, "//div[@class='mw-parser-output']//ul/li/a")
+tags = driver.find_elements(By.XPATH, "//a[contains(@title, 'List of painters')]")
 
 # Tạo danh sách các liên kết
-links = [tag.get_attribute("href") for tag in tags if tag.get_attribute("href") and "List_of_painters" in tag.get_attribute("href")]
+links = [tag.get_attribute("href") for tag in tags]
 
 # Xuất thông tin
 for link in links:
