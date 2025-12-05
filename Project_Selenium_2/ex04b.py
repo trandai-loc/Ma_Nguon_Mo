@@ -13,7 +13,7 @@ ser = Service(gecko_path)
 
 options = webdriver.firefox.options.Options()
 options.binary_location = "C:/Program Files/Mozilla Firefox/firefox.exe"
-options.headless = False
+options.headless = True
 
 email = input("Nhập tài khoản (email): ")
 password_input = getpass.getpass("Nhập mật khẩu (sẽ được ẩn): ")

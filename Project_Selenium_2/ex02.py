@@ -4,115 +4,119 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from selenium.webdriver import ActionChains
 import time
 import pandas as pd
 
-# Đường dẫn đến file thực thi geckodriver
+# geckodriver
 gecko_path = r"D:/MaNguonMo/Project_Selenium_2/geckodriver.exe"
-
-# Khởi tởi đối tượng dịch vụ với đường geckodriver
 ser = Service(gecko_path)
 
-# Tạo tùy chọn
-options = webdriver.firefox.options.Options();
-options.binary_location ="C:/Program Files/Mozilla Firefox/firefox.exe"
-# Thiết lập firefox chỉ hiện thị giao diện
+# Firefox options
+options = webdriver.firefox.options.Options()
+options.binary_location = "C:/Program Files/Mozilla Firefox/firefox.exe"
 options.headless = False
 
 # Khởi tạo driver
-driver = webdriver.Firefox(options = options, service=ser)
+driver = webdriver.Firefox(options=options, service=ser)
+driver.maximize_window()
 
-# Tạo url
-url = 'https://nhathuoclongchau.com.vn/thuc-pham-chuc-nang/vitamin-khoang-chat'
-
-# Truy cập
+url = "https://nhathuoclongchau.com.vn/thuc-pham-chuc-nang"
 driver.get(url)
-
-# Tạm dừng khoảng 2 giây
 time.sleep(2)
 
-# Tìm phần tử body của trang để gửi phím mũi tên xuống
+# Tìm body
 body = driver.find_element(By.TAG_NAME, "body")
-time.sleep(3)
 
-for k in range (10):
+# CLICK NÚT "Xem thêm sản phẩm"
+for k in range(20):  # thử 20 lần (vì trang load động)
     try:
-        # Lấy tất cả các button trên trang
-       buttons = driver.find_elements(By.TAG_NAME, "button")
+        # Chờ spinner biến mất
+        WebDriverWait(driver, 10).until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, "custom-estore-spinner"))
+        )
+    except:
+        pass
 
-       # Duyệt qua từng button
-       for button in buttons:
-           # Kiểm tra nếu nội dung của button chứa "Xem thêm" và "sản phẩm"
-           if "Xem thêm" in button.text and "sản phẩm" in button.text:
-               # Di chuyển tới button và click
-               button.click()
-               break  # Thoát khỏi vòng lặp nếu đã click thành công
-    
-    except Exception as e:
-        print(f"Lỗi: {e}")
+    time.sleep(1)
 
-# Nhấn phím mũi tên xuống nhiều lần để cuộn xuống từ từ
-for i in range(50):  # Lặp 30 lần, mỗi lần cuộn xuống một ít
+    # Tìm nút "Xem thêm sản phẩm"
+    buttons = driver.find_elements(By.TAG_NAME, "button")
+
+    clicked = False
+    for btn in buttons:
+        text = btn.text.strip().lower()
+
+        if "xem thêm" in text and "sản phẩm" in text:
+            # Cuộn tới nút
+            driver.execute_script("arguments[0].scrollIntoView(true);", btn)
+            time.sleep(0.5)
+
+            try:
+                btn.click()
+                clicked = True
+                time.sleep(2)
+            except:
+                pass
+            break
+
+    if not clicked:
+        break  # không còn nút load thêm → dừng
+
+# CUỘN XUỐNG HẾT TRANG
+for _ in range(80):
     body.send_keys(Keys.ARROW_DOWN)
-    time.sleep(0.01)  # Tạm dừng 0.2 giây giữa mỗi lần cuộn để trang tải nội dung
+    time.sleep(0.01)
 
-# Tạm dừng thêm vài giây để trang tải hết nội dung ở cuối trang
 time.sleep(1)
 
-# Tao cac list
+# LẤY DANH SÁCH SẢN PHẨM (Chọn mua)
 stt = []
-ten_san_pham = []
-gia_ban = []
-hinh_anh = []
+ten = []
+gia = []
+hinh = []
 
-# Tìm tất cả các button có nội dung là "Chọn mua"
 buttons = driver.find_elements(By.XPATH, "//button[text()='Chọn mua']")
+print("Tổng sản phẩm tìm thấy:", len(buttons))
 
-print(len(buttons))
-
-# lay tung san pham
 for i, bt in enumerate(buttons, 1):
-    # Quay ngược 3 lần để tìm div cha
-    parent_div = bt
+    # Tìm div cha chứa thông tin sản phẩm
+    sp = bt
     for _ in range(3):
-        parent_div = parent_div.find_element(By.XPATH,"./..")  # Quay ngược 1 lần
-    
-    sp =parent_div
-    
-    # Lat ten sp
-    try:
-        tsp = sp.find_element(By.TAG_NAME, 'h3').text
-    except:
-        tsp=''
-    
-    # Lat gia sp
-    try:
-        gsp = sp.find_element(By.CLASS_NAME, 'text-blue-5').text
-    except:
-        gsp=''
-    
-    # Lat hinh anh
-    try:
-        ha = sp.find_element(By.TAG_NAME, 'img').get_attribute('src')
-    except:
-        ha=''
+        sp = sp.find_element(By.XPATH, "./..")
 
-    # Chi them vao ds neu co ten sp
-    if(len(tsp)>0):
+    # Tên SP
+    try:
+        tsp = sp.find_element(By.TAG_NAME, "h3").text
+    except:
+        tsp = ""
+
+    # Giá
+    try:
+        gsp = sp.find_element(By.CLASS_NAME, "text-blue-5").text
+    except:
+        gsp = ""
+
+    # Ảnh
+    try:
+        img = sp.find_element(By.TAG_NAME, "img").get_attribute("src")
+    except:
+        img = ""
+
+    # Thêm vào list
+    if tsp != "":
         stt.append(i)
-        ten_san_pham.append(tsp)
-        gia_ban.append(gsp)
-        hinh_anh.append(ha)
+        ten.append(tsp)
+        gia.append(gsp)
+        hinh.append(img)
 
-# Tạo df
-df=pd.DataFrame({
-    "STT" : stt,
-    "Tên sản phẩm": ten_san_pham,
-    "Giá bán":gia_ban,
-    "Hình ảnh":hinh_anh
-    
+df = pd.DataFrame({
+    "STT": stt,
+    "Tên sản phẩm": ten,
+    "Giá bán": gia,
+    "Hình ảnh": hinh
 })
 
-df.to_excel('danh_sach_sp_long_chau.xlsx', index=False)
+df.to_excel("danh_sach_sp_long_chau.xlsx", index=False)
+
+print("DONE! Đã lưu file Excel.")
+driver.quit()

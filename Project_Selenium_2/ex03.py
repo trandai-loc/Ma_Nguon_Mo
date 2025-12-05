@@ -12,7 +12,7 @@ import pandas as pd
 # Đường dẫn đến file thực thi geckodriver
 gecko_path = r"D:/MaNguonMo/Project_Selenium_2/geckodriver.exe"
 
-# Khởi tởi đối tượng dịch vụ với đường geckodriver
+# Khởi tạo đối tượng dịch vụ với đường geckodriver
 ser = Service(gecko_path)
 
 # Tạo tùy chọn

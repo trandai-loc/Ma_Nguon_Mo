@@ -157,7 +157,7 @@ def collect_profile_links() -> list[str]:
             print(f"[{letter}] thu được: {len(links)} link")
 
     finally:
-        driver.quit()
+        driver.quit() 
 
     # Loại trùng
     seen = set()

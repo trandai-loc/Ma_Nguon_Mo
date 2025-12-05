@@ -6,15 +6,13 @@ import time
 from urllib.parse import quote
 
 # 1) CẤU HÌNH
-# Ta sẽ lọc lại để chỉ giữ Đại học Việt Nam.
 MAIN_URL = "https://vi.wikipedia.org/wiki/" + quote(
     "Danh sách trường đại học, học viện và cao đẳng tại Việt Nam",
     safe=""
 )
 
-HEADERS = {"User-Agent": "Mozilla/5.0"}  # Giả lập trình duyệt thật để tránh bị chặn
+HEADERS = {"User-Agent": "Mozilla/5.0"}  
 
-# TỪ KHÓA cần loại (KHÔNG lấy cao đẳng, học viện)
 BAD_KEYWORDS = ["cao đẳng", "học viện"]
 
 # TỪ KHÓA giúp phát hiện TRƯỜNG NƯỚC NGOÀI
@@ -32,7 +30,7 @@ def clean_text(t):
     if not t: return ""
     t = re.sub(r"\[\d+\]", "", t)  # Bỏ các ký hiệu kiểu [1]
     t = t.replace("\xa0", " ")
-    return re.sub(r"\s+", " ", t).strip()  # Gom nhiều space thành 1
+    return re.sub(r"\s+", " ", t).strip()  
 
 
 def extract_code(text):
@@ -60,8 +58,6 @@ def is_vietnam_university(name):
         return False
 
     # 3) Chỉ nhận tên dạng:
-    #    - "Đại học ..."
-    #    - "Trường Đại học ..."
     return t.startswith("đại học") or t.startswith("trường đại học")
 
 # 3) TẢI TRANG DANH SÁCH TỪ WIKIPEDIA
@@ -69,7 +65,7 @@ print("Tải trang:", MAIN_URL)
 resp = requests.get(MAIN_URL, headers=HEADERS)
 soup = BeautifulSoup(resp.text, "html.parser")
 
-found = {}  # lưu các trường đã thu thập được (key = tên viết thường)
+found = {}  # lưu các trường đã thu thập được 
 
 
 def add_school(name, url=""):

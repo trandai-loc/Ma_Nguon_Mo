@@ -3,7 +3,7 @@ from selenium.webdriver.firefox.service import Service
 import time
 
 # Đường dẫn đến file thực thi geckodriver
-gecko_path = r"D:/MaNguonMo/Bai_Tap_Gecko/geckodriver.exe"
+gecko_path = r"D:/MaNguonMo/Project_Selenium_2/geckodriver.exe"
 
 # Khởi tạo đối tượng Service với đường dẫn geckodriver
 ser = Service(gecko_path)
